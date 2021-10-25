@@ -14,35 +14,46 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   List<Marker> allMarkers = [];
-  
+
+  late GoogleMapController _mapController;
+  late BitmapDescriptor _markerIcon;
+
+  _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
+
+    setState(() {
+      allMarkers.add(Marker(
+        markerId: const MarkerId('Erhvervsakademi Aarhus'),
+        infoWindow: const InfoWindow(
+            title: 'ErhvervsAkademi Aarhus',
+            snippet: 'Et godt sted at blive undervist i Mobile'),
+        draggable: false,
+        icon: _markerIcon,
+        position: const LatLng(56.119657, 10.158651),
+        onTap: () {},
+      ));
+    });
+  }
 
   @override
   void initState() {
-    allMarkers.add(
-      Marker(
-        markerId: const MarkerId('Erhvervsakademi Aarhus'),
-        infoWindow: const InfoWindow(title: 'ErhvervsAkademi Aarhus'),
-        draggable: false,
-        position: const LatLng(56.119657, 10.158651),
-        onTap: () {},
-      ),
-    );
-    allMarkers.add(Marker(
-      markerId: const MarkerId('Erhvervsakademi'),
-      draggable: false,
-      position: const LatLng(52.119657, 11.158651),
-      onTap: () {},
-    ));
     super.initState();
+    _setMarkerIcon();
+  }
+
+  _setMarkerIcon() async {
+    _markerIcon = await BitmapDescriptor.fromAssetImage(
+        const ImageConfiguration(), 'assets/rocket.png');
   }
 
   @override
   Widget build(BuildContext context) {
     return GoogleMap(
+      onMapCreated: _onMapCreated,
       mapType: MapType.hybrid,
       initialCameraPosition: const CameraPosition(
-        target: LatLng(46.119657, 5.158651),
-        zoom: 17,
+        target: LatLng(56.119657, 10.158651),
+        zoom: 16,
       ),
       markers: Set.from(allMarkers),
     );
